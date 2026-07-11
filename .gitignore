@@ -1,0 +1,49 @@
+# ==========================================
+# Root / System / IDEs
+# ==========================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# Frontend (Next.js)
+# ==========================================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+# Local environment variables (never commit these!)
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# ==========================================
+# Backend (NestJS)
+# ==========================================
+backend/node_modules/
+backend/dist/
+# NestJS CLI build cache
+backend/.nest/
+# Local environment variables
+backend/.env
+backend/.env.development
+backend/.env.test
+backend/.env.production
+
+# ==========================================
+# Database / Prisma / Docker (If applicable)
+# ==========================================
+# If you run docker-compose at the root or inside folders
+.env
+.env.local
+# Prisma local overrides if you ever generate them locally
+backend/prisma/*.db
+backend/prisma/*.db-journal
