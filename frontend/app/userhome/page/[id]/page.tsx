@@ -15,10 +15,13 @@ async function Getnote(noteId: string): Promise<Noteprop | null> {
         cache: "no-store",
       },
     );
+    if (!getnote.ok) return null;
     console.log(getnote);
-    return await getnote.json();
+    const res = await getnote.json();
+    return res as Noteprop;
   } catch (error) {
     console.log(error);
+    return null
   }
 }
 
