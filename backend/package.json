@@ -17,8 +17,7 @@
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:cov": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "testRegex": ".*\\.(spec|test|intigration)\\.ts$"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@clerk/express": "^2.1.40",
@@ -72,7 +71,7 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "testRegex": ".*\\.(spec|test|integration)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -83,6 +82,8 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
+      "^@prisma/client$": "<rootDir>/../node_modules/@prisma/client",
+      "^\\.prisma/client/(.*)$": "<rootDir>/../node_modules/.prisma/client/$1",
       "^(\\.{1,2}/.*)\\.js$": "$1"
     }
   }
