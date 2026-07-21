@@ -86,6 +86,8 @@
     ],
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
+      "^@prisma/client$": "<rootDir>/../node_modules/@prisma/client",
+      "^\\.prisma/client/(.*)$": "<rootDir>/../node_modules/.prisma/client/$1",
       "^(\\.{1,2}/.*)\\.js$": "$1"
     }
   }
