@@ -63,8 +63,7 @@
     "typescript-eslint": "^8.20.0",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.10"
-  },
-"jest": {
+  },"jest": {
     "moduleFileExtensions": [
       "js",
       "json",
@@ -86,8 +85,12 @@
     ],
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
-      "^@prisma/client$": "<rootDir>/../node_modules/@prisma/client",
-      "^\\.prisma/client/(.*)$": "<rootDir>/../node_modules/.prisma/client/$1",
+      "^\\.prisma/client/(.*)\\.js$": "<rootDir>/../node_modules/.prisma/client/$1.js",
+      "^\\.prisma/client/(.*)$": [
+        "<rootDir>/../node_modules/.prisma/client/$1.js",
+        "<rootDir>/../node_modules/.prisma/client/$1/index.js",
+        "<rootDir>/../node_modules/.prisma/client/$1"
+      ],
       "^(\\.{1,2}/.*)\\.js$": "$1"
     }
   }
