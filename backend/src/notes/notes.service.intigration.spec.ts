@@ -4,6 +4,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
+import { randomUUID } from 'crypto';
 import { execSync } from 'child_process';
 import { BadRequestException } from '@nestjs/common';
 import { NotesService } from './notes.service';
@@ -56,9 +57,13 @@ describe('note service intigration test', () => {
       await container.stop().catch(() => {});
     }
   }, 30000);
-  const createuser = async (name = 'test user', email = 'test@example.com') => {
+  const createuser = async (
+    id = randomUUID(),
+    name = 'test user',
+    email = 'test@example.com',
+  ) => {
     return prismaService.user.create({
-      data: { name, email },
+      data: { id, name, email },
     });
   };
   describe('create note', () => {
