@@ -78,6 +78,7 @@ describe('Ai service intigration test', () => {
         content: 'test content',
         author: {
           create: {
+            id: 'test-id-1',
             email: 'testuser@example.com',
             name: 'Test User',
             // Add any other required user fields here (e.g. clerkId if applicable)
