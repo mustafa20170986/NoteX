@@ -47,3 +47,11 @@ backend/.env.production
 # Prisma local overrides if you ever generate them locally
 backend/prisma/*.db
 backend/prisma/*.db-journal
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
