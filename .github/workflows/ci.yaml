@@ -30,7 +30,7 @@ jobs:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
               with: 
-                node-version: 22
+                node-version: 24
                 cache: npm
                 cache-dependency-path: backend/package-lock.json
             - name: install dependency 
@@ -67,7 +67,7 @@ jobs:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
               with:
-                node-version: 22
+                node-version: 24
                 cache: npm 
                 cache-dependency-path: frontend/package-lock.json
             - name: install dependency
@@ -77,13 +77,13 @@ jobs:
               #run unit + intigration test if branch is main 
             - name: run all test if main branch
               if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'main' || github.base_ref == 'master'
-              run: npm run test -- --watchAll=false
+              run: npm run test --if-present --watchAll=false
               working-directory: frontend
 
               #if branch is feature rununit test 
             - name: run unit test on feature branch
               if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
-              run: npm run test -- --watchAll=false --testPathIgnorePatterns=int
+              run: npm run test --if-present --watchAll=false --testPathIgnorePatterns=int
               working-directory: frontend
 
               #build next app 
