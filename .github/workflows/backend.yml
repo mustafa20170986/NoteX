@@ -1,0 +1,76 @@
+name: backend-ci
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  backend-ci:
+    name: Backend CI
+    runs-on: 'ubuntu-latest'
+
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: 'postgres:15-alpine'
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Prisma Generate
+        run: npx prisma generate --schema=prisma/schema.prisma
+
+      # Main/Master Branch: Integration + Unit Tests
+      - name: Run Backend Integration and Unit Tests (main/master)
+        if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'master' || github.base_ref == 'main'
+        run: |
+          npx prisma db push --schema=prisma/schema.prisma
+          npm run test
+        env:
+          DATABASE_URL: "postgresql://testuser:test@localhost:5432/testdb?schema=public"
+
+      # Feature Branch: Unit Tests Only
+      - name: Run Backend Unit Tests (feature branch)
+        if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
+        run: npm run test -- --testPathIgnorePatterns=int
+
+      - name: Nest Build
+        run: npm run build
+        
