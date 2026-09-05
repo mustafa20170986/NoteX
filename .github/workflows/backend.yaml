@@ -14,7 +14,7 @@ on:
 
 concurrency:
   group: backend-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   backend-ci:
@@ -55,13 +55,13 @@ jobs:
         run: npm install
 
       - name: Prisma Generate
-        run: npx prisma generate
+        run: npx prisma generate --schema=prisma/schema.prisma
 
       # Main/Master Branch: Integration + Unit Tests
       - name: Run Backend Integration and Unit Tests (main/master)
         if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'master' || github.base_ref == 'main'
         run: |
-          npx prisma db push
+          npx prisma db push --schema=prisma/schema.prisma
           npm run test
         env:
           DATABASE_URL: "postgresql://testuser:test@localhost:5432/testdb?schema=public"
@@ -72,4 +72,4 @@ jobs:
         run: npm run test -- --testPathIgnorePatterns=int
 
       - name: Nest Build
-        run: npm run build
+        run: npm run build 
