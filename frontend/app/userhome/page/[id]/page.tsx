@@ -21,7 +21,7 @@ async function Getnote(noteId: string): Promise<Noteprop | null> {
     return res as Noteprop;
   } catch (error) {
     console.log(error);
-    return null
+    return null;
   }
 }
 
@@ -63,4 +63,4 @@ export default async function NotePage({ params }: PageProp) {
     </div>
   );
 }
-//comment test-1
+//comment test-2
