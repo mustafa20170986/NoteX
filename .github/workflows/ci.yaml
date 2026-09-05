@@ -1,106 +1,105 @@
-name: Ci
+name: CI
 
 on:
-  push: 
+  push:
     branches: ['**']
-  pull_request: 
+  pull_request:
     branches: ['**']
+
 concurrency:
-    group: ${{github.workflow}}-${{github.ref}}
-    cancel-in-progress: true
-jobs: 
-    backend-ci:
-        name: Backend ci
-        runs-on: 'ubuntu-latest'
-        services:
-            postgres: 
-                image: 'postgres:15-alpine'
-                env:
-                    POSTGRES_USER: testuser
-                    POSTGRES_PASSWORD: test
-                    POSTGRES_DB: testdb
-                ports: 
-                    - 5432:5432
-                options: >-
-                 --health-cmd pg_isready
-                 --health-interval 10s
-                 --health-timeout 5s
-                 --health-retries 5
-        steps: 
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with: 
-                node-version: 24
-                cache: npm
-                cache-dependency-path: backend/package-lock.json
-            - name: install dependency 
-              run: npm  install
-              working-directory: backend
-            - name: prisma generate 
-              run: npx prisma generate 
-              working-directory: backend
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-            #if main branch run unit test +intigrationt test 
+jobs:
+  backend-ci:
+    name: Backend CI
+    runs-on: 'ubuntu-latest'
 
-            - name: run backend intigration and unit test in main/master branch
-              if: github.ref_name=='main' || github.ref_name=='master' || github.base_ref=='master' || github.base_ref=='main'
-              run: |
-                npx prisma db push 
-                npm run test 
-              working-directory: backend 
-              env: 
-                DATABASE_URL: "postgresql://testuser:test@localhost:5432/testdb?schema=public"
+    services:
+      postgres:
+        image: 'postgres:15-alpine'
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-            - name: run just unit test if feature branch
-              if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
-              run: npm run test -- --testPathIgnorePatterns=int
-              working-directory: backend
-            - name: nest build 
-              run: npm run build 
-              working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
 
-    frontend-ci:
-        name: frontend-ci 
-        runs-on: 'ubuntu-latest'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-        steps: 
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with:
-                node-version: 24
-                cache: npm 
-                cache-dependency-path: frontend/package-lock.json
-            - name: install dependency
-              run: npm install
-              working-directory: frontend 
+      - name: Install Dependencies
+        run: npm install
+        working-directory: backend
 
-              #run unit + intigration test if branch is main 
-            - name: run all test if main branch
-              if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'main' || github.base_ref == 'master'
-              run: npm run test --if-present --watchAll=false
-              working-directory: frontend
+      - name: Prisma Generate
+        run: npx prisma generate
+        working-directory: backend
 
-              #if branch is feature rununit test 
-            - name: run unit test on feature branch
-              if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
-              run: npm run test --if-present --watchAll=false --testPathIgnorePatterns=int
-              working-directory: frontend
+      # Main/Master Branch: Integration + Unit Tests
+      - name: Run Backend Integration and Unit Tests (main/master)
+        if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'master' || github.base_ref == 'main'
+        run: |
+          npx prisma db push
+          npm run test
+        working-directory: backend
+        env:
+          DATABASE_URL: "postgresql://testuser:test@localhost:5432/testdb?schema=public"
 
-              #build next app 
-            - name: next app build 
-              run: npm run build
-              working-directory: frontend
-              env: 
-                NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy
-                CLERK_SECRET_KEY: sk_test_dummy 
+      # Feature Branch: Unit Tests Only
+      - name: Run Backend Unit Tests (feature branch)
+        if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
+        run: npm run test -- --testPathIgnorePatterns=int
+        working-directory: backend
 
-        
+      - name: Nest Build
+        run: npm run build
+        working-directory: backend
 
+  frontend-ci:
+    name: Frontend CI
+    runs-on: 'ubuntu-latest'
 
+    steps:
+      - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
+      - name: Install Dependencies
+        run: npm install
+        working-directory: frontend
 
-             
-             
-                
-            
+      # Main/Master Branch: All Tests
+      - name: Run All Frontend Tests (main/master)
+        if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'main' || github.base_ref == 'master'
+        run: npm run test --if-present
+        working-directory: frontend
+
+      # Feature Branch: Unit Tests Only (Vitest excludes .int.test files)
+      - name: Run Frontend Unit Tests (feature branch)
+        if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
+        run: npm run test --if-present -- --exclude "**/*.int.test.*"
+        working-directory: frontend
+
+      # Next.js Build
+      - name: Next.js App Build
+        run: npm run build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy
+          CLERK_SECRET_KEY: sk_test_dummy
