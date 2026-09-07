@@ -43,6 +43,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history so Git diffing works for changed tests
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -57,8 +59,8 @@ jobs:
       - name: Prisma Generate
         run: npx prisma generate --schema=prisma/schema.prisma
 
-      # Main/Master Branch: Integration + Unit Tests
-      - name: Run Backend Integration and Unit Tests (main/master)
+      # Main/Master Branch: Full DB Setup + All Tests
+      - name: Run Full Test Suite (main/master)
         if: github.ref_name == 'main' || github.ref_name == 'master' || github.base_ref == 'master' || github.base_ref == 'main'
         run: |
           npx prisma db push --schema=prisma/schema.prisma
@@ -66,10 +68,10 @@ jobs:
         env:
           DATABASE_URL: "postgresql://testuser:test@localhost:5432/testdb?schema=public"
 
-      # Feature Branch: Unit Tests Only
-      - name: Run Backend Unit Tests (feature branch)
+      # Feature Branch: Only run unit tests on modified files, ignoring Prisma DB tests
+      - name: Run Tests on Changed Files Only (feature branch)
         if: github.ref_name != 'main' && github.ref_name != 'master' && github.base_ref != 'master' && github.base_ref != 'main'
-        run: npm run test -- --testPathIgnorePatterns=int
+        run: npm run test -- --onlyChanged --passWithNoTests --testPathIgnorePatterns="int|prisma"
 
       - name: Nest Build
-        run: npm run build 
+        run: npm run build
