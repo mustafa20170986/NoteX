@@ -64,7 +64,7 @@
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.10"
   },
-  "jest": {
+"jest": {
     "moduleFileExtensions": [
       "js",
       "json",
@@ -80,10 +80,12 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
+    "moduleDirectories": [
+      "node_modules",
+      "<rootDir>/../node_modules"
+    ],
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
-      "^@prisma/client$": "<rootDir>/../node_modules/@prisma/client",
-      "^\\.prisma/client/(.*)$": "<rootDir>/../node_modules/.prisma/client/$1",
       "^(\\.{1,2}/.*)\\.js$": "$1"
     }
   }
