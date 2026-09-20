@@ -69,3 +69,5 @@ jobs:
             --build-arg CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
             -t rn20170986/frontend:latest .
           docker push rn20170986/frontend:latest
+
+          
