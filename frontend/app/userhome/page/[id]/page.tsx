@@ -10,7 +10,7 @@ interface Noteprop {
 async function Getnote(noteId: string): Promise<Noteprop | null> {
   try {
     const getnote = await fetch(
-      `http://localhost:2017/notes/getnote/${noteId}`,
+      `http://notex-backend-service:2017/notes/getnote/${noteId}`,
       {
         cache: "no-store",
       },
