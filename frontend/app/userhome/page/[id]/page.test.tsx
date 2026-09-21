@@ -2,14 +2,12 @@ import { screen, render } from "@testing-library/react";
 import NotePage from "./page";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
-// 1. Mock Clerk Authentication
 vi.mock("@clerk/nextjs/server", () => ({
   auth: vi.fn(),
 }));
 
-// 2. Mock Next.js Navigation (Including useRouter)
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
   useRouter: vi.fn(() => ({
@@ -20,22 +18,26 @@ vi.mock("next/navigation", () => ({
   })),
 }));
 
-// 3. Mock Aibutton child component to isolate NotePage
 vi.mock("@/components/aibutton", () => ({
   default: function MockAiButton() {
     return <div data-testid="ai-button">AI Button</div>;
   },
 }));
 
-// 4. Mock global fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("NotePage (Vitest)", () => {
   const mockParams = Promise.resolve({ id: "note123" });
+  const API_URL = "http://notex-backend-service:2017";
 
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.API_URL = API_URL;
+  });
+
+  afterEach(() => {
+    delete process.env.API_URL;
   });
 
   it("should return the user to the signup page when unauthenticated", async () => {
@@ -77,15 +79,18 @@ describe("NotePage (Vitest)", () => {
     const compo = await NotePage({ params: mockParams });
     render(compo);
 
-    // Verify fetch endpoint call
     expect(mockFetch).toHaveBeenCalledWith(
-      "http://localhost:2017/notes/getnote/note123",
+      `${API_URL}/notes/getnote/note123`,
       { cache: "no-store" },
     );
 
-    // Verify rendered content
     expect(screen.getByText("test title")).toBeInTheDocument();
     expect(screen.getByText("test content")).toBeInTheDocument();
     expect(screen.getByTestId("ai-button")).toBeInTheDocument();
   });
 });
+
+
+
+
+
