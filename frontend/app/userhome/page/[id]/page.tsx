@@ -1,22 +1,27 @@
 import Aibutton from "@/components/aibutton";
 import { auth } from "@clerk/nextjs/server";
-import { Sparkle } from "lucide-react";
 import { redirect } from "next/navigation";
+
 interface Noteprop {
   id: string;
   title: string;
   content: string;
 }
+
 async function Getnote(noteId: string): Promise<Noteprop | null> {
   try {
+    const baseUrl =
+      process.env.API_URL ?? "http://notex-backend-service:2017";
+
     const getnote = await fetch(
-      `http://localhost:2017/notes/getnote/${noteId}`,
+      `${baseUrl}/notes/getnote/${noteId}`,
       {
         cache: "no-store",
       },
     );
+
     if (!getnote.ok) return null;
-    console.log(getnote);
+
     const res = await getnote.json();
     return res as Noteprop;
   } catch (error) {
@@ -34,6 +39,7 @@ export default async function NotePage({ params }: PageProp) {
   if (!userId) {
     redirect("/sign-in");
   }
+
   const { id } = await params;
   const singlenote = await Getnote(id);
 
@@ -63,4 +69,3 @@ export default async function NotePage({ params }: PageProp) {
     </div>
   );
 }
-//comment test-5
