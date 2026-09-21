@@ -54,6 +54,9 @@ describe("userhome unit test", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
+    // Set the environment variable so UserHome builds the expected URL
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://notex-backend-service:2017");
+
     (useRouter as any).mockReturnValue({
       push: mockPush,
       refresh: mockRefresh,
@@ -62,6 +65,7 @@ describe("userhome unit test", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("render loading state while user is verifying", async () => {
@@ -94,6 +98,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      text: async () => JSON.stringify(mocknote),
       json: async () => mocknote,
     });
 
@@ -120,6 +125,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      text: async () => JSON.stringify([]),
       json: async () => [],
     });
 
@@ -142,6 +148,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      text: async () => JSON.stringify([]),
       json: async () => [],
     });
 
