@@ -50,12 +50,10 @@ describe("userhome unit test", () => {
   const mockPush = vi.fn();
   const mockRefresh = vi.fn();
   const mockToken = vi.fn().mockResolvedValue("mock-token");
-  const API_URL = "http://notex-backend-service:2017";
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
-    process.env.NEXT_PUBLIC_API_URL = API_URL;
     (useRouter as any).mockReturnValue({
       push: mockPush,
       refresh: mockRefresh,
@@ -64,7 +62,6 @@ describe("userhome unit test", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    delete process.env.NEXT_PUBLIC_API_URL;
   });
 
   it("render loading state while user is verifying", async () => {
@@ -109,7 +106,7 @@ describe("userhome unit test", () => {
     });
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      `${API_URL}/notes/findnote/user-123`,
+      "http://notex-backend-service:2017/notes/findnote/user-123",
     );
   });
 
