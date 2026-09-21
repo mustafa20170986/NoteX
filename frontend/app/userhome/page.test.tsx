@@ -1,10 +1,15 @@
+import { expect, describe, it, vi, beforeEach, afterEach } from "vitest";
+
+// 1. MUST STUB ENV BEFORE IMPORTING COMPONENTS
+// This ensures UserHome uses 'http://notex-backend-service:2017' during import evaluation
+vi.stubEnv("NEXT_PUBLIC_API_URL", "http://notex-backend-service:2017");
+
 import { render, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SyncUser from "@/components/syncuser";
 import UserHome from "./page";
 import userEvent from "@testing-library/user-event";
-import { expect, describe, it, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
@@ -54,8 +59,6 @@ describe("userhome unit test", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
-    // Set the environment variable so UserHome builds the expected URL
-    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://notex-backend-service:2017");
 
     (useRouter as any).mockReturnValue({
       push: mockPush,
@@ -65,7 +68,6 @@ describe("userhome unit test", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.unstubAllEnvs();
   });
 
   it("render loading state while user is verifying", async () => {
@@ -98,6 +100,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      headers: new Headers(),
       text: async () => JSON.stringify(mocknote),
       json: async () => mocknote,
     });
@@ -112,6 +115,7 @@ describe("userhome unit test", () => {
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "http://notex-backend-service:2017/notes/findnote/user-123",
+      expect.anything(),
     );
   });
 
@@ -125,6 +129,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      headers: new Headers(),
       text: async () => JSON.stringify([]),
       json: async () => [],
     });
@@ -148,6 +153,7 @@ describe("userhome unit test", () => {
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
+      headers: new Headers(),
       text: async () => JSON.stringify([]),
       json: async () => [],
     });
