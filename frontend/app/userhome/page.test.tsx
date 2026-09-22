@@ -19,18 +19,15 @@ vi.mock("@/components/syncuser", () => ({
   default: vi.fn(),
 }));
 
-
 vi.mock("@/components/drawer", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="mock-drawer">{children}</div>
   ),
 }));
 
-
 vi.mock("@/components/usernavbar", () => ({
   default: () => <div data-testid="mock-navbar">Navbar</div>,
 }));
-
 
 vi.mock("@/components/card", () => ({
   default: ({ title }: { title: string }) => (
@@ -38,12 +35,10 @@ vi.mock("@/components/card", () => ({
   ),
 }));
 
-
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
       queries: {
-        retry: false,
         retry: false,
       },
     },
@@ -60,7 +55,6 @@ describe("userhome unit test", () => {
   const mockPush = vi.fn();
   const mockRefresh = vi.fn();
   const mockToken = vi.fn().mockResolvedValue("mock-token");
-  const API_URL = "http://notex-backend-service:2017";
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -72,13 +66,10 @@ describe("userhome unit test", () => {
     });
   });
 
-
   afterEach(() => {
     vi.unstubAllGlobals();
-    delete process.env.NEXT_PUBLIC_API_URL;
+    vi.unstubAllEnvs();
   });
-
-  
 
   it("render loading state while user is verifying", async () => {
     (SyncUser as any).mockReturnValue({
@@ -88,15 +79,12 @@ describe("userhome unit test", () => {
       username: null,
     });
 
-
     renderWithClient(<UserHome />);
-
 
     expect(
       screen.getByText(/syncing user credentials\.\.\./i),
     ).toBeInTheDocument();
   });
-
 
   it("fetches data for authenticated users", async () => {
     (SyncUser as any).mockReturnValue({
@@ -106,12 +94,10 @@ describe("userhome unit test", () => {
       username: { id: "user-123", fullName: "rayan" },
     });
 
-
     const mocknote = [
       { id: "n-123", title: "k8s", content: " done" },
       { id: "n-23", title: "nest", content: "still learning" },
     ];
-
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
@@ -119,7 +105,6 @@ describe("userhome unit test", () => {
       text: async () => JSON.stringify(mocknote),
       json: async () => mocknote,
     });
-
 
     renderWithClient(<UserHome />);
 
@@ -129,12 +114,10 @@ describe("userhome unit test", () => {
       expect(screen.getByText("nest")).toBeInTheDocument();
     });
 
-
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "http://notex-backend-service:2017/notes/findnote/user-123"
+      "http://notex-backend-service:2017/notes/findnote/user-123",
     );
   });
-
 
   it("handles when there is no note for a user", async () => {
     (SyncUser as any).mockReturnValue({
@@ -144,7 +127,6 @@ describe("userhome unit test", () => {
       username: { id: "user-123", fullName: "rayan" },
     });
 
-
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
       headers: new Headers(),
@@ -152,9 +134,7 @@ describe("userhome unit test", () => {
       json: async () => [],
     });
 
-
     renderWithClient(<UserHome />);
-
 
     await waitFor(() => {
       expect(screen.getByText(/no notes found yet\./i)).toBeInTheDocument();
@@ -162,19 +142,14 @@ describe("userhome unit test", () => {
   });
 
   it("should navigate to new note when clicked", async () => {
-
-  it("should navigate to new note when clicked", async () => {
     const user = userEvent.setup();
-
 
     (SyncUser as any).mockReturnValue({
       token: mockToken,
       isSignedIn: true,
       isLoaded: true,
       username: { id: "user-123", fullName: "rayan" },
-      username: { id: "user-123", fullName: "rayan" },
     });
-
 
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
@@ -183,11 +158,7 @@ describe("userhome unit test", () => {
       json: async () => [],
     });
 
-
     renderWithClient(<UserHome />);
-
-    const addButton = screen.getByRole("button", { name: /add new note/i });
-    await user.click(addButton);
 
     const addButton = screen.getByRole("button", { name: /add new note/i });
     await user.click(addButton);
