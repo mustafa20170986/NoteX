@@ -1,7 +1,7 @@
 import { expect, describe, it, vi, beforeEach, afterEach } from "vitest";
 
 // 1. MUST STUB ENV BEFORE IMPORTING COMPONENTS
-// This ensures UserHome uses 'http://notex-backend-service:2017' during import evaluation
+// Ensures UserHome resolves to 'http://notex-backend-service:2017' during module import
 vi.stubEnv("NEXT_PUBLIC_API_URL", "http://notex-backend-service:2017");
 
 import { render, screen, waitFor } from "@testing-library/react";
@@ -47,7 +47,7 @@ const createTestQueryClient = () =>
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = createTestQueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
   );
 }
 
@@ -82,7 +82,7 @@ describe("userhome unit test", () => {
     renderWithClient(<UserHome />);
 
     expect(
-      screen.getByText(/syncing user credentials\.\.\./i),
+      screen.getByText(/syncing user credentials\.\.\./i)
     ).toBeInTheDocument();
   });
 
@@ -115,7 +115,7 @@ describe("userhome unit test", () => {
     });
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "http://notex-backend-service:2017/notes/findnote/user-123",
+      "http://notex-backend-service:2017/notes/findnote/user-123"
     );
   });
 
