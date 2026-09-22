@@ -78,7 +78,7 @@ describe("userhome unit test", () => {
     delete process.env.NEXT_PUBLIC_API_URL;
   });
 
-  it("render loading state while user is verifying", async () => {
+  
 
   it("render loading state while user is verifying", async () => {
     (SyncUser as any).mockReturnValue({
