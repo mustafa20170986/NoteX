@@ -114,8 +114,7 @@ describe("userhome unit test", () => {
     });
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "http://notex-backend-service:2017/notes/findnote/user-123",
-      expect.anything(),
+      "http://notex-backend-service:2017/notes/findnote/user-123"
     );
   });
 
