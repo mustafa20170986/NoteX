@@ -17,8 +17,11 @@ interface NotedataProp {
 async function Fetchnote(authorId: string): Promise<NotedataProp[]> {
   if (!authorId) return [];
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL || "http://notex-backend-service:2017";
+
   const response = await fetch(
-    `http://localhost:2017/notes/findnote/${authorId}`,
+    `${baseUrl}/notes/findnote/${authorId}`,
   );
 
   if (!response.ok) {
